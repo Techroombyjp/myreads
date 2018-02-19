@@ -2,17 +2,16 @@ import React, { Component } from 'react';
 
 class BookShelfChanger extends Component {
   state = {
-    value: ''
+    value: 'none'
   }
   handleChange = (event) => {
-    console.log('change')
     this.setState({value: event.target.value})
-    this.props.onChangeShelf(this.props.book, event.target.value)
+    this.props.onChangeShelf(event.target.value)
   }
   render() {
     return (
       <div className="book-shelf-changer">
-        <select onChange={(event) => this.handleChange(event)}>
+        <select value={this.props.shelf} onChange={(event) => this.handleChange(event)}>
           <option value="none" disabled>Move to...</option>
           <option value="currentlyReading">Reading</option>
           <option value="wantToRead">Want to Read</option>
