@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import * as BooksAPI from '../BooksAPI';
-import escapeRegExp from 'escape-string-regexp';
+// import escapeRegExp from 'escape-string-regexp';
 import BookShelfChanger from './BookShelfChanger';
+import _array from 'lodash/array';
 
 class SearchBook extends Component {
   state = {
@@ -13,20 +14,48 @@ class SearchBook extends Component {
   updateQuery = (query) => {
     this.setState({ query: query.trim() })
   }
+  objDigger = (arr, diggers) => {
+    const digged = [];
+    diggers.forEach((d) => {
+      let o = {};
+      o = arr.filter((a) => a.id === d);
+      o.forEach((i) => {
+        digged.push(i);
+      })
+    });
+    return digged;
+  }
+  filterHelper = (result) => {
+    const resultKeys = result.map((r) => r.id)
+    const stateKeys = this.props.books.map((s) => s.id)
+    // this.objDigger(this.props.books, stateKeys)
+
+    // new books
+    const newKeys = _array.difference(resultKeys, stateKeys);
+    const newObjs = this.objDigger(result, newKeys)
+
+    // existing books
+    const existingKeys = _array.difference(resultKeys, newKeys)
+    const existingObjs = this.objDigger(this.props.books, existingKeys);
+
+    // // search books
+    const searchObjs = newObjs.concat(existingObjs);
+    return searchObjs;
+  }
+
   searchBook = (query) => {
-    let showingBooks = [];
-    const match = new RegExp(escapeRegExp(query), 'i');
     this.updateQuery(query);
     if (query) {
-      BooksAPI.search(query).then((response) => {
-        console.log(response)
-        if (!response.error) {
-          showingBooks = response.filter((book) => match.test(book.title));
-          this.setState({result: showingBooks});
+      BooksAPI.search(query).then((result) => {
+        result = this.filterHelper(result)
+        // second part contains books that are new
+        if (!result.error) {
+          this.setState({
+            result,
+          })
         }
       })
     } else {
-      console.log('no query')
       this.setState({result: []});
     }
   }
@@ -65,11 +94,11 @@ class SearchBook extends Component {
 
         <div className="search-books-results">
           <ol className="books-grid">
-            {result.map((book) => (
+            {result.length>0 && result.map((book) => (
               <li key={book.id}>
                 <div className="book">
                   <div className="book-top">
-                    <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.smallThumbnail})` }}></div>
+                    <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks && book.imageLinks.smallThumbnail})` }}></div>
                     <BookShelfChanger
                       shelf={book.shelf ? book.shelf : 'none'}
                       onChangeShelf={(newShelf) => {

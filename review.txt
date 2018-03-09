@@ -1,0 +1,1 @@
+- Why to use const instead of let?
