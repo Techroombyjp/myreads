@@ -3,7 +3,7 @@
 This is the first assignment for Udacity's React Fundamentals course. The aim of this assignment is to put into practice the basic concepts of React and learn how to think in React. There are no redux or helper libraries. The app adheres to composability way of development.
 
 ## Getting Started
-Getting started is simple, either clone or fork this repo. The backend server and its API description is located [here]
+Getting started is simple, either clone or fork this repo. The backend server and its API description is located [here](https://github.com/udacity/reactnd-project-myreads-starter/blob/master/README.md)
 
 ### Installing
 Fork or clone the repo and run these commands:
