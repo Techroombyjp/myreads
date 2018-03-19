@@ -1,69 +1,17 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import * as BooksAPI from '../BooksAPI';
-// import escapeRegExp from 'escape-string-regexp';
 import BookShelfChanger from './BookShelfChanger';
-import _array from 'lodash/array';
+
 
 class SearchBook extends Component {
-  state = {
-    query: '',
-    result: []
-  }
-
-  updateQuery = (query) => {
-    this.setState({ query: query.trim() })
-  }
-  objDigger = (arr, diggers) => {
-    const digged = [];
-    diggers.forEach((d) => {
-      let o = {};
-      o = arr.filter((a) => a.id === d);
-      o.forEach((i) => {
-        digged.push(i);
-      })
-    });
-    return digged;
-  }
-  filterHelper = (result) => {
-    const resultKeys = result.map((r) => r.id)
-    const stateKeys = this.props.books.map((s) => s.id)
-    // this.objDigger(this.props.books, stateKeys)
-
-    // new books
-    const newKeys = _array.difference(resultKeys, stateKeys);
-    const newObjs = this.objDigger(result, newKeys)
-
-    // existing books
-    const existingKeys = _array.difference(resultKeys, newKeys)
-    const existingObjs = this.objDigger(this.props.books, existingKeys);
-
-    // // search books
-    const searchObjs = newObjs.concat(existingObjs);
-    return searchObjs;
-  }
-
-  searchBook = (query) => {
-    this.updateQuery(query);
-    if (query) {
-      BooksAPI.search(query).then((result) => {
-        result = this.filterHelper(result)
-        // second part contains books that are new
-        if (!result.error) {
-          this.setState({
-            result,
-          })
-        }
-      })
-    } else {
-      this.setState({result: []});
-    }
-  }
   handleChange = (book, newShelf) => {
     this.props.onChangeShelf(book, newShelf);
   }
+  handleInputChange = (event) => {
+    this.props.onChange(event.target.value);
+  }
   render() {
-    const { result } = this.state;
+    const { result } = this.props;
 
     return (
       <div className="search-books">
@@ -86,7 +34,7 @@ class SearchBook extends Component {
             <input
               type="text"
               placeholder="Search by title or author"
-              onChange={(event) => this.searchBook(event.target.value)}
+              onChange={ (event) => this.handleInputChange(event) }
             />
 
           </div>
